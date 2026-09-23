@@ -21,6 +21,16 @@
   .color-dot{ width:22px; height:22px; border-radius:9999px; border:2px solid #fff; cursor:pointer; box-shadow:0 0 0 1px rgba(0,0,0,.5);}
   input[type=file]{ display:none; }
   input[type=color]{ position:absolute; opacity:0; width:22px; height:22px; cursor:pointer; }
+  .candidate-number{ min-width:2.25rem; text-align:center; box-shadow:0 2px 4px rgba(0,0,0,.4); }
+  .candidate-name{ letter-spacing:.02em; text-transform:uppercase; box-shadow:0 2px 4px rgba(0,0,0,.35); }
+  .candidate-photo{ box-shadow:inset 0 0 0 1px rgba(255,255,255,.08); }
+
+  /* Elementos de edição não devem aparecer na imagem exportada */
+  #poster.exporting .color-dot,
+  #poster.exporting .upload-hint{ display:none !important; }
+  #poster.exporting [contenteditable]{ outline:none !important; }
+
+  #downloadBtn:disabled{ opacity:.6; cursor:wait; }
 </style>
 </head>
 <body class="min-h-screen">
@@ -100,7 +110,7 @@ function makeCard(c, idx, groupId){
   wrap.className = "flex flex-col items-center text-center";
 
   const photo = document.createElement('div');
-  photo.className = "photo-slot w-full h-24 bg-stone-700 relative";
+  photo.className = "photo-slot candidate-photo w-full h-24 bg-stone-700 relative";
   if(c.silhouette){
     photo.style.background = "#000";
     photo.innerHTML = '<i class="fa-solid fa-user absolute inset-0 flex items-center justify-center text-5xl text-stone-900" style="display:flex;"></i>';
@@ -128,7 +138,7 @@ function makeCard(c, idx, groupId){
   badgeWrap.className = "relative -mt-3";
   const badge = document.createElement('div');
   const textColor = c.numberDark ? "text-black" : "text-white";
-  badge.className = `font-anton ${textColor} text-sm px-2 py-0.5 rounded-full inline-block`;
+  badge.className = `candidate-number font-anton ${textColor} text-sm px-2 py-0.5 rounded-full inline-block`;
   badge.style.background = c.color;
   badge.contentEditable = !c.noNumber;
   badge.innerText = c.noNumber ? "" : c.number;
@@ -151,7 +161,7 @@ function makeCard(c, idx, groupId){
   badgeWrap.appendChild(colorDot);
 
   const namePill = document.createElement('div');
-  namePill.className = "font-anton text-white text-[11px] px-2 py-0.5 mt-1 leading-tight";
+  namePill.className = "candidate-name font-anton text-white text-[11px] px-2 py-0.5 mt-1 leading-tight";
   namePill.style.background = c.color;
   namePill.contentEditable = true;
   namePill.innerText = c.name;
@@ -165,13 +175,29 @@ function makeCard(c, idx, groupId){
 CANDIDATES_G1.forEach((c,i)=> document.getElementById('group1').appendChild(makeCard(c,i,'g1')));
 CANDIDATES_G2.forEach((c,i)=> document.getElementById('group2').appendChild(makeCard(c,i,'g2')));
 
-document.getElementById('downloadBtn').onclick = () => {
-  html2canvas(document.getElementById('poster'), {useCORS:true, backgroundColor:null, scale:2}).then(canvas => {
-    const link = document.createElement('a');
-    link.download = 'cartaz-candidatos.png';
-    link.href = canvas.toDataURL('image/png');
-    link.click();
-  });
+const downloadBtn = document.getElementById('downloadBtn');
+const poster = document.getElementById('poster');
+
+downloadBtn.onclick = () => {
+  document.activeElement.blur();
+  window.getSelection().removeAllRanges();
+
+  downloadBtn.disabled = true;
+  downloadBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Gerando...';
+  poster.classList.add('exporting');
+
+  html2canvas(poster, {useCORS:true, backgroundColor:null, scale:3, imageTimeout:15000})
+    .then(canvas => {
+      const link = document.createElement('a');
+      link.download = 'cartaz-candidatos.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    })
+    .finally(() => {
+      poster.classList.remove('exporting');
+      downloadBtn.disabled = false;
+      downloadBtn.innerHTML = '<i class="fa-solid fa-download mr-2"></i>Baixar imagem';
+    });
 };
 </script>
 </body>
