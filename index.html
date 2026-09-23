@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Editor de Cartaz de Candidatos</title>
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  body{font-family:'Inter',sans-serif;background:#e7e5e4;}
+  .font-anton{font-family:'Anton',sans-serif;}
+  .poster-outline{-webkit-text-stroke:2px black; text-shadow:3px 3px 0 #000;}
+  .banner-tape{ position:relative; }
+  .photo-slot{ background-size:cover; background-position:center; cursor:pointer; }
+  .photo-slot:hover .upload-hint{ opacity:1; }
+  .upload-hint{ opacity:0; transition:opacity .15s; }
+  [contenteditable]:hover{ outline:1px dashed rgba(255,255,255,.5); }
+  [contenteditable]:focus{ outline:2px dashed #fff; }
+  .color-dot{ width:22px; height:22px; border-radius:9999px; border:2px solid #fff; cursor:pointer; box-shadow:0 0 0 1px rgba(0,0,0,.5);}
+  input[type=file]{ display:none; }
+  input[type=color]{ position:absolute; opacity:0; width:22px; height:22px; cursor:pointer; }
+</style>
+</head>
+<body class="min-h-screen">
+
+<div class="max-w-6xl mx-auto px-4 py-6">
+  <header class="flex flex-wrap items-center justify-between gap-3 mb-6 border-b border-stone-300 pb-4">
+    <div>
+      <h1 class="text-xl font-bold tracking-tight text-stone-900">Editor de Cartaz de Candidatos</h1>
+      <p class="text-xs uppercase tracking-widest text-stone-500 mt-1">Clique na foto para trocar · clique no número para trocar a cor · clique no texto para editar</p>
+    </div>
+    <button id="downloadBtn" class="bg-stone-900 text-white text-sm font-semibold px-5 py-2.5 hover:bg-stone-700 transition-colors">
+      <i class="fa-solid fa-download mr-2"></i>Baixar imagem
+    </button>
+  </header>
+
+  <div class="flex justify-center">
+    <div id="poster" class="w-[380px] bg-black relative overflow-hidden border-8 border-yellow-400" style="background:linear-gradient(180deg,#0a0a0a,#111);">
+
+      <!-- top border stripes -->
+      <div class="h-2 w-full flex">
+        <div class="flex-1 bg-green-600"></div>
+        <div class="flex-1 bg-yellow-400"></div>
+        <div class="flex-1 bg-green-600"></div>
+      </div>
+
+      <div class="px-4 pt-4 pb-2 text-center">
+        <h2 contenteditable="true" class="font-anton text-white text-5xl leading-none poster-outline" style="-webkit-text-stroke:2px black;">CANDIDATOS</h2>
+      </div>
+
+      <div class="text-center mb-3">
+        <span contenteditable="true" class="font-anton inline-block bg-yellow-400 text-black text-lg px-3 py-0.5 -rotate-1">DO RENATINHO</span>
+        <div contenteditable="true" class="font-anton text-white text-xl mt-1">SALÃO DO SERRA NEGRA</div>
+      </div>
+
+      <!-- GROUP 1 -->
+      <div class="grid grid-cols-4 gap-1 px-2" id="group1"></div>
+
+      <div class="text-center my-4 px-3">
+        <span contenteditable="true" class="font-anton inline-block bg-blue-600 text-white text-lg px-3 py-0.5 rotate-1">CANDIDATOS DO</span>
+        <div contenteditable="true" class="font-anton inline-block bg-yellow-400 text-black text-xl px-3 py-0.5 mt-1 -rotate-1">CARTÃO DO SERRA NEGRA</div>
+      </div>
+
+      <!-- GROUP 2 -->
+      <div class="grid grid-cols-4 gap-1 px-2" id="group2"></div>
+
+      <div class="text-center py-5">
+        <span contenteditable="true" class="font-anton text-white text-2xl">✓ VOTE CERTO!</span>
+      </div>
+
+      <div class="h-2 w-full flex">
+        <div class="flex-1 bg-green-600"></div>
+        <div class="flex-1 bg-yellow-400"></div>
+        <div class="flex-1 bg-green-600"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<script>
+const CANDIDATES_G1 = [
+  {photo:"https://quemterepresenta.com.br/wp-content/uploads/2024/01/Foto-de-%F0%9F%98%832-e1706544707417-1024x1024.jpg", number:"2270", name:"GLEYCE", color:"#dc2626"},
+  {photo:"https://imagenes.elpais.com/resizer/v2/JL3W3B4EDNEGNGOCLBUXWBLYGY.jpg?auth=2318c0d7e08152c6b90462d612a73c7fac44c863ddd4f9de0ed0b1e5291b53f6&width=980&height=980&smart=true", number:"22550", name:"PEDRINHO", color:"#2563eb"},
+  {photo:"https://cdn.dlojavirtual.com/static1/95641/sku/acessorios-bone-preto--p-1710520268156.jpg", number:"10", name:"CLEITINHO", color:"#16a34a"},
+  {photo:"https://bestseller.com/media/peom40k4/jackjones_aw25-ss26_1-1_2.jpg?width=1000&height=0&quality=80&v=1dc05fc30e3b880", number:"22", name:"FLÁVIO", color:"#7c3aed"}
+];
+const CANDIDATES_G2 = [
+  {photo:"https://images.unsplash.com/photo-1737098191945-b50001fec4b9?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", number:"", name:"LAFAEIT", color:"#7c3aed", noNumber:true},
+  {photo:"https://img.criativodahora.com.br/2024/02/criativo-65cbe4dd98315MTMvMDIvMjAyNCAxOGg1Mw==.jpg", number:"", name:"MARIA CLARA", color:"#7c3aed", noNumber:true},
+  {photo:"", number:"13", name:"ESSE VC ESCOLHE QUEM VC QUISER", color:"#facc15", numberDark:true, silhouette:true},
+  {photo:"https://img.cdndsgni.com/preview/12813700.jpg", number:"13", name:"LULA", color:"#dc2626"}
+];
+
+function makeCard(c, idx, groupId){
+  const wrap = document.createElement('div');
+  wrap.className = "flex flex-col items-center text-center";
+
+  const photo = document.createElement('div');
+  photo.className = "photo-slot w-full h-24 bg-stone-700 relative";
+  if(c.silhouette){
+    photo.style.background = "#000";
+    photo.innerHTML = '<i class="fa-solid fa-user absolute inset-0 flex items-center justify-center text-5xl text-stone-900" style="display:flex;"></i>';
+  } else {
+    photo.style.backgroundImage = `url('${c.photo}')`;
+  }
+  const hint = document.createElement('div');
+  hint.className = "upload-hint absolute inset-0 bg-black/50 flex items-center justify-center text-white text-[10px] font-semibold";
+  hint.innerHTML = '<i class="fa-solid fa-camera mr-1"></i>Trocar';
+  photo.appendChild(hint);
+  const fileInput = document.createElement('input');
+  fileInput.type = "file";
+  fileInput.accept = "image/*";
+  fileInput.onchange = e => {
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => { photo.style.backgroundImage = `url('${ev.target.result}')`; };
+    reader.readAsDataURL(file);
+  };
+  photo.appendChild(fileInput);
+  photo.onclick = () => fileInput.click();
+
+  const badgeWrap = document.createElement('div');
+  badgeWrap.className = "relative -mt-3";
+  const badge = document.createElement('div');
+  const textColor = c.numberDark ? "text-black" : "text-white";
+  badge.className = `font-anton ${textColor} text-sm px-2 py-0.5 rounded-full inline-block`;
+  badge.style.background = c.color;
+  badge.contentEditable = !c.noNumber;
+  badge.innerText = c.noNumber ? "" : c.number;
+  if(c.noNumber){ badge.style.display = "none"; }
+  badgeWrap.appendChild(badge);
+
+  const colorDot = document.createElement('div');
+  colorDot.className = "color-dot absolute -right-1 -top-1";
+  colorDot.style.background = c.color;
+  const colorInput = document.createElement('input');
+  colorInput.type = "color";
+  colorInput.value = c.color;
+  colorInput.oninput = e => {
+    badge.style.background = e.target.value;
+    colorDot.style.background = e.target.value;
+    namePill.style.background = e.target.value;
+  };
+  colorDot.appendChild(colorInput);
+  colorDot.onclick = () => colorInput.click();
+  badgeWrap.appendChild(colorDot);
+
+  const namePill = document.createElement('div');
+  namePill.className = "font-anton text-white text-[11px] px-2 py-0.5 mt-1 leading-tight";
+  namePill.style.background = c.color;
+  namePill.contentEditable = true;
+  namePill.innerText = c.name;
+
+  wrap.appendChild(photo);
+  wrap.appendChild(badgeWrap);
+  wrap.appendChild(namePill);
+  return wrap;
+}
+
+CANDIDATES_G1.forEach((c,i)=> document.getElementById('group1').appendChild(makeCard(c,i,'g1')));
+CANDIDATES_G2.forEach((c,i)=> document.getElementById('group2').appendChild(makeCard(c,i,'g2')));
+
+document.getElementById('downloadBtn').onclick = () => {
+  html2canvas(document.getElementById('poster'), {useCORS:true, backgroundColor:null, scale:2}).then(canvas => {
+    const link = document.createElement('a');
+    link.download = 'cartaz-candidatos.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  });
+};
+</script>
+</body>
+</html>
