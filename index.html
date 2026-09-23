@@ -25,6 +25,25 @@
   .candidate-name{ letter-spacing:.02em; text-transform:uppercase; box-shadow:0 2px 4px rgba(0,0,0,.35); }
   .candidate-photo{ box-shadow:inset 0 0 0 1px rgba(255,255,255,.08); }
 
+  .poster-bg{
+    background:
+      radial-gradient(60% 38% at 22% 6%, rgba(0,155,73,.40) 0%, rgba(0,155,73,0) 70%),
+      radial-gradient(60% 38% at 86% 3%, rgba(255,205,0,.30) 0%, rgba(255,205,0,0) 70%),
+      radial-gradient(48% 30% at 50% 33%, rgba(0,39,118,.45) 0%, rgba(0,39,118,0) 70%),
+      radial-gradient(70% 45% at 50% 100%, rgba(0,155,73,.18) 0%, rgba(0,155,73,0) 70%),
+      linear-gradient(165deg, #070707 0%, #0b0b0c 55%, #000 100%);
+  }
+  .accent-bar{
+    height:5px;
+    background:linear-gradient(90deg, #009c3b 0%, #ffdf00 50%, #009c3b 100%);
+    box-shadow:0 2px 6px rgba(0,0,0,.5);
+  }
+  .tag-pill{ box-shadow:0 2px 5px rgba(0,0,0,.4); }
+  .vote-banner{
+    background:linear-gradient(90deg, #009c3b 0%, #ffdf00 100%);
+    box-shadow:0 3px 8px rgba(0,0,0,.45);
+  }
+
   /* Elementos de edição não devem aparecer na imagem exportada */
   #poster.exporting .color-dot,
   #poster.exporting .upload-hint{ display:none !important; }
@@ -47,7 +66,7 @@
   </header>
 
   <div class="flex justify-center">
-    <div id="poster" class="w-[380px] bg-black relative overflow-hidden border-8 border-yellow-400" style="background:linear-gradient(180deg,#0a0a0a,#111);">
+    <div id="poster" class="poster-bg w-[380px] relative overflow-hidden border-8 border-yellow-400">
 
       <!-- top border stripes -->
       <div class="h-2 w-full flex">
@@ -56,28 +75,30 @@
         <div class="flex-1 bg-green-600"></div>
       </div>
 
-      <div class="px-4 pt-4 pb-2 text-center">
+      <div class="px-4 pt-5 pb-1 text-center">
         <h2 contenteditable="true" class="font-anton text-white text-5xl leading-none poster-outline" style="-webkit-text-stroke:2px black;">CANDIDATOS</h2>
       </div>
 
-      <div class="text-center mb-3">
-        <span contenteditable="true" class="font-anton inline-block bg-yellow-400 text-black text-lg px-3 py-0.5 -rotate-1">DO RENATINHO</span>
-        <div contenteditable="true" class="font-anton text-white text-xl mt-1">SALÃO DO SERRA NEGRA</div>
+      <div class="accent-bar w-16 mx-auto -rotate-1 mb-3"></div>
+
+      <div class="text-center mb-4">
+        <span contenteditable="true" class="tag-pill font-anton inline-block bg-yellow-400 text-black text-lg px-3 py-0.5 -rotate-1">DO RENATINHO</span>
+        <div contenteditable="true" class="font-anton text-white text-xl mt-1" style="text-shadow:0 2px 4px rgba(0,0,0,.6);">SALÃO DO SERRA NEGRA</div>
       </div>
 
       <!-- GROUP 1 -->
       <div class="grid grid-cols-4 gap-1 px-2" id="group1"></div>
 
-      <div class="text-center my-4 px-3">
-        <span contenteditable="true" class="font-anton inline-block bg-blue-600 text-white text-lg px-3 py-0.5 rotate-1">CANDIDATOS DO</span>
-        <div contenteditable="true" class="font-anton inline-block bg-yellow-400 text-black text-xl px-3 py-0.5 mt-1 -rotate-1">CARTÃO DO SERRA NEGRA</div>
+      <div class="text-center my-5 px-3">
+        <span contenteditable="true" class="tag-pill font-anton inline-block bg-blue-600 text-white text-lg px-3 py-0.5 rotate-1">CANDIDATOS DO</span>
+        <div contenteditable="true" class="tag-pill font-anton inline-block bg-yellow-400 text-black text-xl px-3 py-0.5 mt-1 -rotate-1">CARTÃO DO SERRA NEGRA</div>
       </div>
 
       <!-- GROUP 2 -->
       <div class="grid grid-cols-4 gap-1 px-2" id="group2"></div>
 
-      <div class="text-center py-5">
-        <span contenteditable="true" class="font-anton text-white text-2xl">✓ VOTE CERTO!</span>
+      <div class="vote-banner text-center py-3 mt-5">
+        <span contenteditable="true" class="font-anton text-black text-2xl tracking-wide">✓ VOTE CERTO!</span>
       </div>
 
       <div class="h-2 w-full flex">
